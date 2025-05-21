@@ -44,7 +44,7 @@ function showData() {
     <td>${products[index].price}</td>
     <td>${products[index].description}</td>
     <td>
-    <button onClick="updateProduct(${products[index].id})" class="btn btn-success">Update</button>
+    <button onClick="getupdateProduct(${products[index].id})" class="btn btn-success">Update</button>
     </td>
     <td>
     <button onClick="deleteProduct(${products[index].id})" class="btn btn-danger">Delete</button>
@@ -75,94 +75,45 @@ function deleteProduct(id) {
   ApiCRUD("DELETE", `http://localhost:3000/delete/${id}`);
 }
 
-function updateProduct(id) {
-  ApiCRUD("PUT", `http://localhost:3000/edit/${id}`);
+
+
+// get back data from table to input to update it 
+let currentUpdateId = null;
+function getupdateProduct(id) {
+  const product = products.find((item) => item.id === id);
+  document.getElementById("productName").value = product.name;
+  document.getElementById("productPrice").value = product.price;
+  document.getElementById("productDesc").value = product.description;
+
+  currentUpdateId = id;
+  document.getElementById("maimBtn").classList.add("d-none");
+  document.getElementById("update").classList.remove("d-none");
 }
 
-/* 
-var productName = document.getElementById("productName");
-var productPrice = document.getElementById("productPrice");
-var productCategory = document.getElementById("productCategory");
-var productDesc = document.getElementById("productDesc");
-var maimBtn = document.getElementById("maimBtn");
-let products = [];
 
-getData()
+//set new data updated
+function setNewUpdateData() {
+  if (currentUpdateId === null) {
+    alert("Please select a product to update.");
+    return;
+  }
 
-maimBtn.onclick = function () {
-    getInputValue()
+  let updatedProduct = {
+    name: document.getElementById("productName").value,
+    price: document.getElementById("productPrice").value,
+    description: document.getElementById("productDesc").value,
+  };
+
+  ApiCRUD(
+    "PUT",
+    `http://localhost:3000/edit/${currentUpdateId}`,
+    updatedProduct
+  );
+
+  currentUpdateId = null;
+  document.getElementById("productName").value = "";
+  document.getElementById("productPrice").value = "";
+  document.getElementById("productDesc").value = "";
+  document.getElementById("maimBtn").classList.remove("d-none");
+  document.getElementById("update").classList.add("d-none");
 };
-
-function clearForm() {
-    productName.value = '';
-    productPrice.value = '';
-    productCategory.value = '';
-    productDesc.value = '';
-};
-
-
-
-
-async function getData() {
-    await fetch('http://localhost:3000/products')
-        .then(response => response.json())
-        .then(responseData => {
-            if (responseData.message === 'success') {
-                products = responseData.data
-                // console.log(products);
-                displayData()
-            }
-        })
-}
-
-var cartoona = ``
-
-function displayData() {
-    products.map(product => {
-        cartoona += `
-                <tr>
-                    <td>${product.name}</td>
-                    <td>${product.price}</td>
-                    <td>${product.description}</td>
-                    <td><button type="button" class="btn btn-outline-primary">Update</button></td>
-                    <td><button onclick="deleteObject(${product.price})" type="button" class="btn btn-outline-danger">Delete</button></td>
-                </tr>
-            `
-            document.getElementById('tbody').innerHTML = cartoona
-    })
-}
-
-
-function getInputValue() {
-    let productObject = {
-        name: productName.value,
-        price: productPrice.value,
-        description: productDesc.value,
-    }
-    ApiCRUD('POST', productObject)
-    // console.log(productObject);
-}
-
-
-
-
-
-function ApiCRUD(method, obj) {
-    fetch('http://localhost:3000/products', {
-        method: method,
-        body: JSON.stringify(obj),
-        headers: { 'Content-Type': 'application/json' }
-    })
-    products.push(obj)
-    // window.location.reload()
-}
-
-function deleteObject(_id) {
-    // fetch('http://localhost:3000/products', {
-    //     method: DELETE,
-    //     body: JSON.stringify({_id}),
-    //     headers: { 'Content-Type': 'application/json' }
-    // })
-    // window.location.reload()
-    console.log(_id);
-} */
